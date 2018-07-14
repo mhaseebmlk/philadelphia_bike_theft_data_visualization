@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Philadelphia Bike Theft Data</title>
+	<link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css">
+	<script type="text/javascript" src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+	<link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.css">
+	<link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.Default.css">
+	<script type="text/javascript" src="https://unpkg.com/leaflet.markercluster@1.3.0/dist/leaflet.markercluster.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<style type="text/css">
+		body {
+			padding: 0;
+			margin: 0;
+		}
+	</style>
+</head>
+<body>
+	<div id="map" style="height: 100%;width: 100%;position: absolute;"></div>
+	<script type="text/javascript">
+		$.getJSON('https://raw.githubusercontent.com/CityOfPhiladelphia/phl-open-geodata/master/bicycle_thefts/bicycle_thefts_Part1.geojson',function(bikeTheftData) {
+
+			// Create variable to hold map element
+			var map = L.map('map');
+
+			// Add OpenStreetMap tile layer to map element
+			L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+				attribution: '© OpenStreetMap'
+			}).addTo(map);
+
+			var markers = L.markerClusterGroup();			
+			// Add JSON to map
+			var popUpsLayer=L.geoJson(bikeTheftData,{
+				onEachFeature: function(feature, layer) {
+					layer.bindPopup("STOLEN_VAL: " + feature.properties.STOLEN_VAL);
+				}
+			})
+			
+			markers.addLayer(popUpsLayer);
+			map.fitBounds(markers.getBounds());
+			map.addLayer(markers);
+		});
+	</script>
+</body>
+</html>
